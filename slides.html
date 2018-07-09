@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>At your Service with Service Workers</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      a {
+        color: #a07cc0;
+      }
+      li {
+        font-size: 24pt;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      .inverse {
+        background: #000;
+        color: #fff;
+      }
+      .remark-slide-content {
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .stripe {
+        height: 5px;
+        width: 100%;
+        background-color: indigo;
+        border-top: 1px solid rebeccapurple;
+        border-bottom: 1px solid rebeccapurple;
+        position: absolute;
+        margin-top: 125px;
+        left: 0;
+        right: 0;
+      }
+      .remark-slide-right {
+          bottom: 12px;
+          position: absolute;
+          left: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle, inverse
+
+# At your Service with Service Workers
+---
+class: center, middle, inverse
+
+# At your Service with Service Workers
+---
+layout: false
+class: center, middle, inverse
+# Carmen Bourlon
+## Twitter: [@carmalou](https://twitter.com/carmalou)
+## Blog: [carmalou.com](http://carmalou.com)
+## [MargieMap](http://carmalou.com/margie/)
+---
+class: left, middle, inverse
+
+# What are Service Workers?
+
+- Cache files and assets
+---
+class: left, middle, inverse
+
+# What are Service Workers?
+
+- Cache files and assets
+- View app even without connection
+---
+class: left, middle, inverse
+
+# What are Service Workers?
+
+- Cache files and assets
+- View app even without connection
+- Increase app performance
+---
+class: left, middle, inverse
+
+# Why should I use one?
+
+- Consistency
+---
+class: left, middle, inverse
+
+# Why should I use one?
+
+- Consistency
+- Everyone will lose connection
+---
+class: left, middle, inverse
+
+# Why should I use one?
+
+- Consistency
+- Everyone will lose connection
+- Service Workers can help people
+---
+class: left, middle, inverse
+
+## 12% of U.S. adults are "smartphone-dependent"
+---
+class: left, middle, inverse
+
+## 12% of U.S. adults are "smartphone-dependent"
+
+### "Smartphone-dependent": 
+        - No access to internet at home
+---
+class: left, middle, inverse
+
+## 12% of U.S. adults are "smartphone-dependent"
+
+### "Smartphone-dependent": 
+        - No access to internet at home
+        - No access to internet in public places
+---
+class: left, middle, inverse
+
+## 12% of U.S. adults are "smartphone-dependent"
+
+### "Smartphone-dependent": 
+        - No access to internet at home
+        - No access to internet in public places
+        - No access at home _and_ no access in public places
+---
+class: left, middle, inverse, inverse
+
+# Predictors of smartphone-dependence
+
+* Income: Incomes under $30k
+* Age: 18-29 year olds
+* Ethnicity: Latinos and African Americans
+---
+class: left, middle, inverse
+
+# Service Workers can help.
+---
+class: left, middle, inverse
+
+# Service Workers can help.
+
+- No worries about network connection
+---
+class: left, middle, inverse
+
+# Service Workers can help.
+
+- No worries about network connection
+- Speed up apps with fewer network connections
+---
+class: left, middle, inverse
+
+# Service Workers can help.
+
+- No worries about network connection
+- Speed up apps with fewer network connections
+- Also, they're pretty awesome
+---
+class: left, middle, inverse
+
+# Quick note about Service Workers:
+
+- Same-origin policy
+---
+class: left, middle, inverse
+
+# Quick note about Service Workers:
+
+- Same-origin policy
+- Https only (except on localhost)
+---
+class: left, middle, inverse
+
+# Simple Service Worker
+
+1. Download
+2. Install
+3. Activate
+---
+class: left, middle, inverse
+
+```javascript
+// serviceworker.js
+self.oninstall = function() {
+    var cacheVersion = 'fayeFrontEndV1'
+    caches.open(cacheVersion).then(function(cache) {
+        cache.addAll([
+            '/',
+            'index.html',
+            'style.css',
+            '/img/img1.jpeg',
+            'error.html'
+        ])
+        .then(function() {
+            // .add() doesn't return a response
+            console.log('added file');
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+    })
+    .catch(function(err) {
+        console.log('err ', err);
+    })
+}
+```
+---
+class: left, middle, inverse
+
+```javascript
+// serviceworker.js
+self.onfetch = function(event) {
+    event.respondWith(
+        caches.match(event.request)
+        .then(function(cachedFiles) {
+            if(cachedFiles) {
+                return cachedFiles;
+            }
+            return fetch(event.request);
+        })
+    );
+}
+```
+---
+class: left, middle, inverse
+
+# Quick notes:
+
+- Both functions use the [Cache API](link)
+- [Cache Storage](link) holds on to the files
+- Caches are tied to an origin
+- An origin can have multiple caches
+---
+class: left, middle, inverse
+
+# Updating our Service Worker
+
+```javascript
+// serviceworker.js
+self.oninstall = function() {
+    // TODO: Add in delete caches logic
+    var cacheVersion = 'fayeFrontEndV2'
+    caches.open(cacheVersion).then(function(cache) {
+        cache.addAll([
+            '/',
+            'index.html',
+            'style.css',
+            '/img/img1.jpeg',
+            'error.html'
+        ])
+        .then(function() {
+            // .add() doesn't return a response
+            console.log('added file');
+        })
+        .catch(function(err) {
+            console.log(err);
+        });
+    })
+    .catch(function(err) {
+        console.log('err ', err);
+    })
+}
+```
+---
+layout: false
+class: center, middle, inverse
+# Carmen Bourlon
+## Twitter: [@carmalou](https://twitter.com/carmalou)
+## Blog: [carmalou.com](http://carmalou.com)
+## [MargieMap](http://carmalou.com/margie/)
+
+</textarea>
+<script src="./scripts/remark-latest.min.js">
+</script>
+<script>
+  var slideshow = remark.create();
+  var arr = document.getElementsByClassName('remark-slide-content');
+  for(var i = 0; i < arr.length; i++) {
+    var tmpEl = document.createElement('div');
+    var innerLink = document.createElement('a');
+    innerLink.setAttribute('href', 'https://twitter.com/carmalou');
+    var innerText = document.createTextNode('Twitter: carmalou');
+    tmpEl.classList.add('remark-slide-right');
+    innerLink.classList.add('carmalou');
+    innerLink.appendChild(innerText);
+    tmpEl.appendChild(innerLink);
+    arr[i].appendChild(tmpEl);
+  }
+</script>
+</body>
+</html>
