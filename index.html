@@ -44,6 +44,12 @@
           position: absolute;
           left: 20px;
       }
+
+      img {
+        width: 100%;
+        height: auto;
+      }
+
     </style>
   </head>
   <body>
@@ -226,20 +232,31 @@ class: left, middle, inverse
 - Same-origin policy
 - Https only (except on localhost)
 ---
-class: left, middle, inverse
+class: center, middle, inverse
 
-# Simple Service Worker
+# [Service worker browser support](https://caniuse.com/#search=service%20workers)
+![alt text](./img/can-i-use-serviceworker.PNG "Service Worker browser support")
+---
+class: center, middle, inverse
+
+# Service Worker Lifecycle
 
 1. Download
 2. Install
 3. Activate
+4. Wait
+
+???
+Work on this graphic: ![alt text](./img/service-worker-lifecycle.PNG "Service Worker lifecycle")
+doesn't currently fit slide
 ---
 class: left, middle, inverse
 
 ```javascript
 // serviceworker.js
 self.oninstall = function() {
-    var cacheVersion = 'fayeFrontEndV1'
+    // TODO: Add in delete caches logic
+    var cacheVersion = require('./package.json').version;
     caches.open(cacheVersion).then(function(cache) {
         cache.addAll([
             '/',
@@ -290,37 +307,6 @@ class: left, middle, inverse
 ---
 class: left, middle, inverse
 
-# Updating our Service Worker
-
-```javascript
-// serviceworker.js
-self.oninstall = function() {
-    // TODO: Add in delete caches logic
-    var cacheVersion = 'fayeFrontEndV2'
-    caches.open(cacheVersion).then(function(cache) {
-        cache.addAll([
-            '/',
-            'index.html',
-            'style.css',
-            '/img/img1.jpeg',
-            'error.html'
-        ])
-        .then(function() {
-            // .add() doesn't return a response
-            console.log('added file');
-        })
-        .catch(function(err) {
-            console.log(err);
-        });
-    })
-    .catch(function(err) {
-        console.log('err ', err);
-    })
-}
-```
----
-class: left, middle, inverse
-
 # Quick notes:
 
 - Service Workers refresh every 24 hrs
@@ -329,13 +315,36 @@ class: left, middle, inverse
 ---
 class: center, middle, inverse
 
-# Demo: [FayePI](https://fayepi.herokuapp.com/)
+# But wait! There's more!
+
+???
+Talk about Background Sync here
+---
+class: center, middle, inverse
+
+# But wait! There's even more!
+
+???
+Talk about Push here
+---
+class: left, middle, inverse
+
+# Service Worker Demo: [FayePI](https://fayepi.herokuapp.com/)
+# Push API Demo: [ThunderPlains Countdown](#)
+---
+class: left, middle, inverse
+
+# [ThunderPlains Conf](https://2018.thunderplainsconf.com/)
+
+- JavaScript conference in Oklahoma City
+- Awesome content, awesome people
+- CFP open until Aug. 6!
 ---
 layout: false
 class: center, middle, inverse
 # Carmen Bourlon
 ## Twitter: [@carmalou](https://twitter.com/carmalou)
-## Blog: [carmalou.com](http://carmalou.com)
+## Blog: [carmalou.com](https://carmalou.com)
 ## MargieMap: [carmalou.com/margie/](https://carmalou.com/margie/)
 
 </textarea>
