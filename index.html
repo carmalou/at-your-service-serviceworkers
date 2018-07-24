@@ -237,26 +237,32 @@ class: center, middle, inverse
 # [Service worker browser support](https://caniuse.com/#search=service%20workers)
 ![alt text](./img/can-i-use-serviceworker.PNG "Service Worker browser support")
 ---
-class: center, middle, inverse
+class: left, middle, inverse
 
 # Service Worker Lifecycle
 
-1. Download
-2. Install
-3. Activate
-4. Wait
+![alt text](./img/sw3.png "Service Worker lifecycle")
 
 ???
-Work on this graphic: ![alt text](./img/service-worker-lifecycle.PNG "Service Worker lifecycle")
+Work on this graphic: ![alt text](./img/sw3.png "Service Worker lifecycle")
 doesn't currently fit slide
+---
+class:left,middle,inverse
+
+```javascript
+// index.js
+if(navigator.serviceWorker) {
+  navigator.serviceWorker.register('serviceworker.js');
+}
+```
 ---
 class: left, middle, inverse
 
 ```javascript
 // serviceworker.js
 self.oninstall = function() {
-    // TODO: Add in delete caches logic
     var cacheVersion = require('./package.json').version;
+    cacheVersion = 'cache' + cacheVersion;
     caches.open(cacheVersion).then(function(cache) {
         cache.addAll([
             '/',
@@ -276,6 +282,15 @@ self.oninstall = function() {
     .catch(function(err) {
         console.log('err ', err);
     })
+}
+```
+---
+class:left,middle,inverse
+
+```javascript
+// serviceworker.js
+self.onactivate = function(event) {
+  console.log('activation successful');
 }
 ```
 ---
@@ -300,37 +315,174 @@ class: left, middle, inverse
 
 # Quick notes:
 
-- Both functions use the [Cache API](link)
-- [Cache Storage](link) holds on to the files
+- Files are stored in [Cache Storage](https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage)
+- [Cache API](https://developer.mozilla.org/en-US/docs/Web/API/Cache) interfaces with Cache Storage
 - Caches are tied to an origin
 - An origin can have multiple caches
+- Service Workers refresh every 24hrs
 ---
-class: left, middle, inverse
+class: center, middle, inverse
 
-# Quick notes:
-
-- Service Workers refresh every 24 hrs
-- Updating the cache name triggers reinstall
-- Don't change the SW file name!
+# [Let's see it in action!](https://fayepi.herokuapp.com/)
 ---
 class: center, middle, inverse
 
 # But wait! There's more!
+---
+class: center, middle, inverse
 
-???
-Talk about Background Sync here
+# This is great for when someone loses internet access!
+---
+class: center, middle, inverse
+
+# But wouldn't it be even cooler if we could store off their outgoing requests too?
+---
+class: center, middle, inverse
+
+# And even better, send those stored requests when their connection comes back?
+---
+class: center, middle, inverse
+
+# Great news! We can do exactly that!
+---
+class: center, middle, inverse
+
+# [Background Sync](https://wicg.github.io/BackgroundSync/spec/)
+---
+class: center,middle,inverse
+
+# Requests before Background Sync
+![alt text](./img/without-bg-sync.gif "request lifecycle without background Sync")
+---
+class:center,middle,inverse
+
+# Requests after Background Sync
+
+![alt text](./img/backgroundsync.png "Background Sync lifecycle")
+---
+class: left, middle, inverse
+
+```javascript
+// index.js
+if(navigator.serviceWorker) {
+  navigator.serviceWorker.register('./serviceworker.js')
+  .then(registration => navigator.serviceWorker.ready)
+  .then(function(registration) {
+    if(registration.sync) {
+      document.getElementById('submitBtn').addEventListener('click', () => {
+        registration.sync.register('form-sync').then(() => {
+          console.log('Sync registered!');
+        });
+      });
+    } else {
+      // feature isn't there, so don't do anything
+    }
+  });
+}
+```
+---
+class: left, middle, inverse
+
+```javascript
+// serviceworker.js
+self.addEventListener('sync', function(event) {
+  if(event.tag == 'form-sync') {
+    event.waitUntil(sendToServer());
+  }
+});
+```
+---
+class:center,middle,inverse
+
+# [Background Sync Browser Support](https://caniuse.com/#search=background%20sync)
+
+![alt text](./img/can-i-use-background-sync.PNG "Background Sync browser support")
+---
+class:center,middle,inverse
+
+# [Let's see it in action!](https://carmalou.com/indexeddb/)
 ---
 class: center, middle, inverse
 
 # But wait! There's even more!
+---
+class:center,middle,inverse
 
-???
-Talk about Push here
+# How cool would it be to be able to message a user?
+---
+class:center,middle,inverse
+
+# What if we could message the user, even if they weren't on our webpage?
+---
+class:center,middle,inverse
+
+# You guessed it! We can!
+---
+class:center,middle,inverse
+
+# [Web Push](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
+---
+class:center,middle,inverse
+
+# Push Lifecycle Part 1
+
+![alt text](./img/push-pt1.png "Push lifecycle")
+---
+class:center,middle,inverse
+
+# Push Lifecycle Part 2
+
+![alt text](./img/push-pt2.png "Push lifecycle")
 ---
 class: left, middle, inverse
 
-# Service Worker Demo: [FayePI](https://fayepi.herokuapp.com/)
-# Push API Demo: [ThunderPlains Countdown](#)
+```javascript
+// index.js
+if(window.pushManager) {
+  return swReg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: applicationServerKey
+  })
+  .then(function(subscription) {
+    return fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8'
+      },
+      body: JSON.stringify(subscription)
+    });
+  });
+}
+```
+---
+class: left,middle,inverse
+
+```javascript
+// serviceworker.js
+self.onpush = function(event) {
+  // this function runs on push
+  var data = JSON.parse(event.data.text());
+
+  var title = data.title;
+  var options = {
+      body: data.body
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+}
+
+// TODO: make this match the others
+self.onnotificationclick = function(event) {
+  // this runs when we click on the notification
+  event.notification.close();
+
+  event.waitUntil(clients.openWindow('https://2018.thunderplainsconf.com/'));
+});
+```
+---
+class: center, middle, inverse
+
+# [Let's see it in action!](https://thunderplains-countdown-app.herokuapp.com/)
 ---
 class: left, middle, inverse
 
