@@ -16,4 +16,5 @@
 - https://ponyfoo.com/articles/backgroundsync
 - https://developers.google.com/web/updates/2015/12/background-sync
 - https://www.twilio.com/blog/2017/02/send-messages-when-youre-back-online-with-service-workers-and-background-sync.html
+- https://notes.eellson.com/2018/02/11/chrome-the-background-sync-api-and-exponential-backoff/
 - Can I Use: https://caniuse.com/#search=background%20sync
