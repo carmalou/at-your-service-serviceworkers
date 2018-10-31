@@ -54,6 +54,10 @@
           color: #CCBADC;
       }
 
+      .no-margin-bottom h3 {
+        margin-bottom: 0;
+      }
+
     </style>
   </head>
   <body>
@@ -234,6 +238,11 @@ class: left, middle, inverse
 Work on this graphic: ![alt text](./img/sw3.png "Service Worker lifecycle")
 doesn't currently fit slide
 ---
+class: left, middle, inverse, no-margin-bottom
+
+### `serviceWorker.register`
+  - Registers service worker on user's machine
+---
 class:left,middle,inverse
 
 ```javascript
@@ -242,6 +251,36 @@ if(navigator.serviceWorker) {
   navigator.serviceWorker.register('serviceworker.js');
 }
 ```
+---
+class: left, middle, inverse, no-margin-bottom
+
+### `self.oninstall`
+  - Install event for service worker
+---
+class: left, middle, inverse, no-margin-bottom
+
+### `self.oninstall`
+  - Install event for service worker
+
+### `caches.open`
+  - Instantiates a new cache 
+  - Or opens existing cache
+  - Returns promise
+---
+class: left, middle, inverse, no-margin-bottom
+
+### `self.oninstall`
+  - Install event for service worker
+
+### `caches.open`
+  - Instantiates a new cache 
+  - Or opens existing cache
+  - Returns promise
+
+### `caches.addAll`
+  - Accepts an array of filepaths
+  - Adds those files to cache
+  - Returns promise
 ---
 class: left, middle, inverse
 
@@ -272,6 +311,11 @@ self.oninstall = function() {
 }
 ```
 ---
+class: left, middle, inverse, no-margin-bottom
+
+### `self.onactivate`
+  - Activate event for service worker
+---
 class:left,middle,inverse
 
 ```javascript
@@ -280,6 +324,11 @@ self.onactivate = function(event) {
   console.log('activation successful');
 }
 ```
+---
+class: left, middle, inverse,no-margin-bottom
+
+### `self.onfetch`
+  - Fetch event for service worker
 ---
 class: left, middle, inverse
 
@@ -352,9 +401,7 @@ class: left, middle, inverse
 ```javascript
 // index.js
 if(navigator.serviceWorker) {
-  navigator.serviceWorker.register('./serviceworker.js')
-  .then(registration => navigator.serviceWorker.ready)
-  .then(function(registration) {
+  // go ahead and register service worker like normal
     if(registration.sync) {
       document.getElementById('submitBtn').addEventListener('click', () => {
         registration.sync.register('form-sync').then(() => {
