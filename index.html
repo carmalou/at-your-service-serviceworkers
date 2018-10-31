@@ -287,9 +287,7 @@ class: left, middle, inverse
 ```javascript
 // serviceworker.js
 self.oninstall = function() {
-    var cacheVersion = require('./package.json').version;
-    cacheVersion = 'cache' + cacheVersion;
-    caches.open(cacheVersion).then(function(cache) {
+    caches.open(cacheName).then(function(cache) {
         cache.addAll([
             '/',
             'index.html',
@@ -297,17 +295,10 @@ self.oninstall = function() {
             '/img/img1.jpeg',
             'error.html'
         ])
-        .then(function() {
-            // .add() doesn't return a response
-            console.log('added file');
-        })
-        .catch(function(err) {
-            console.log(err);
-        });
+        .then(function() { / ... / })
+        .catch(function(err) { / ... /});
     })
-    .catch(function(err) {
-        console.log('err ', err);
-    })
+    .catch(function(err) { / ... /})
 }
 ```
 ---
@@ -329,6 +320,15 @@ class: left, middle, inverse,no-margin-bottom
 
 ### `self.onfetch`
   - Fetch event for service worker
+---
+class: left, middle, inverse,no-margin-bottom
+
+### `self.onfetch`
+  - Fetch event for service worker
+
+### `caches.match`
+  - Returns corresponding file(s) from a cache
+  - Returns a Promise
 ---
 class: left, middle, inverse
 
@@ -365,17 +365,21 @@ class: center, middle, inverse
 
 # But wait! There's more!
 ---
-class: center, middle, inverse
+class: left, middle, inverse
 
-# This is great for when someone loses internet access!
+# This is great for when someone loses internet access while using a static site.
 ---
-class: center, middle, inverse
+class: left, middle, inverse
 
-# But wouldn't it be even cooler if we could store off their outgoing requests too?
+# But what if it isn't a static site?
+
+# Wouldn't it be even cooler if we could store their outgoing requests too?
 ---
-class: center, middle, inverse
+class: left, middle, inverse
 
-# And even better, send those stored requests when their connection comes back?
+# And even better ...
+
+# What if we had a way to send those requests when their connection returned?
 ---
 class: center, middle, inverse
 
@@ -398,22 +402,47 @@ class:center,middle,inverse
 ---
 class: left, middle, inverse
 
+### `registration.sync`
+  - contains Background Sync functionality
+  - can be used for feature detection
+---
+class: left, middle, inverse
+
+### `registration.sync`
+  - contains Background Sync functionality
+  - can be used for feature detection
+
+### `registration.sync.register`
+- registers a sync event
+- returns a promise
+---
+class: left, middle, inverse
+
 ```javascript
 // index.js
 if(navigator.serviceWorker) {
   // go ahead and register service worker like normal
     if(registration.sync) {
-      document.getElementById('submitBtn').addEventListener('click', () => {
-        registration.sync.register('form-sync').then(() => {
-          console.log('Sync registered!');
-        });
+      button.addEventListener('click', () => {
+        return registration.sync.register('form-sync').then(() => { / ... /});
       });
-    } else {
-      // feature isn't there, so don't do anything
     }
   });
 }
 ```
+---
+class: left, middle, inverse
+
+### `event.tag`
+  - the name of the sync event we registered
+---
+class: left, middle, inverse
+
+### `event.tag`
+  - the name of the sync event we registered
+
+### `event.waitUntil`
+  - keeps service worker awake until a function resolves
 ---
 class: left, middle, inverse
 
@@ -428,7 +457,7 @@ self.addEventListener('sync', function(event) {
 ---
 class:center,middle,inverse
 
-# [Background Sync Browser Support](https://caniuse.com/#search=background%20sync)
+# [Background Sync Browser Support](https://caniuse.com/#feat=background-sync)
 
 ![alt text](./img/can-i-use-background-sync.PNG "Background Sync browser support")
 ---
@@ -550,7 +579,7 @@ class: left, middle, inverse
     var tmpEl = document.createElement('div');
     var innerLink = document.createElement('a');
     innerLink.setAttribute('href', 'https://twitter.com/carmalou');
-    var innerText = document.createTextNode('Twitter: carmalou');
+    var innerText = document.createTextNode('Twitter: @carmalou');
     tmpEl.classList.add('remark-slide-right');
     innerLink.classList.add('carmalou');
     innerLink.appendChild(innerText);
