@@ -58,6 +58,10 @@
         margin-bottom: 0;
       }
 
+      .javascript {
+        line-height: 1.5;
+      }
+
     </style>
   </head>
   <body>
@@ -225,7 +229,7 @@ class: left, middle, inverse
 ---
 class: center, middle, inverse
 
-# [Service worker browser support](https://caniuse.com/#search=service%20workers)
+# [Service worker browser support](https://caniuse.com/#feat=serviceworkers)
 ![alt text](./img/can-i-use-serviceworker.PNG "Service Worker browser support")
 ---
 class: left, middle, inverse
@@ -233,10 +237,6 @@ class: left, middle, inverse
 # Service Worker Lifecycle
 
 ![alt text](./img/sw3.png "Service Worker lifecycle")
-
-???
-Work on this graphic: ![alt text](./img/sw3.png "Service Worker lifecycle")
-doesn't currently fit slide
 ---
 class: left, middle, inverse, no-margin-bottom
 
@@ -296,9 +296,9 @@ self.oninstall = function() {
             'error.html'
         ])
         .then(function() { / ... / })
-        .catch(function(err) { / ... /});
+        .catch(function(err) { / ... / });
     })
-    .catch(function(err) { / ... /})
+    .catch(function(err) { / ... / })
 }
 ```
 ---
@@ -424,7 +424,7 @@ if(navigator.serviceWorker) {
   // go ahead and register service worker like normal
     if(registration.sync) {
       button.addEventListener('click', () => {
-        return registration.sync.register('form-sync').then(() => { / ... /});
+        return registration.sync.register('form-sync').then(() => { / ... / });
       });
     }
   });
@@ -471,7 +471,7 @@ class: center, middle, inverse
 ---
 class:center,middle,inverse
 
-# How cool would it be to be able to message a user?
+## How cool would it be to be able to message a user?
 ---
 class:center,middle,inverse
 
@@ -502,16 +502,9 @@ class: left, middle, inverse
 ```javascript
 // index.js
 if(window.pushManager) {
-  return swReg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: applicationServerKey
-  })
+  return swReg.pushManager.subscribe(configObj)
   .then(function(subscription) {
-    return fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8'
-      },
+    return fetch(url, { / ... / },
       body: JSON.stringify(subscription)
     });
   });
@@ -523,28 +516,26 @@ class: left,middle,inverse
 ```javascript
 // serviceworker.js
 self.onpush = function(event) {
-  // this function runs on push
   var data = JSON.parse(event.data.text());
-
   var title = data.title;
-  var options = {
-      body: data.body
-  };
+  var options = { body: data.body };
 
   event.waitUntil(self.registration.showNotification(title, options));
 }
+```
+---
+class: left,middle,inverse
 
-// TODO: make this match the others
+```javascript
 self.onnotificationclick = function(event) {
-  // this runs when we click on the notification
   event.notification.close();
 
   event.waitUntil(clients.openWindow('https://2018.thunderplainsconf.com/'));
 });
 ```
 ---
-class:left,middle,inverse
-[Push Support](https://caniuse.com/#search=push)
+class:center,middle,inverse
+# [Push Support](https://caniuse.com/#search=push)
 
 ![alt text](./img/can-i-use-push.PNG "Background Sync browser support")
 ---
@@ -552,21 +543,12 @@ class: center, middle, inverse
 
 # [Let's see it in action!](https://thunderplains-countdown-app.herokuapp.com/)
 ---
-class: left, middle, inverse
-
-# [ThunderPlains Conf](https://2018.thunderplainsconf.com/)
-
-- JavaScript conference in Oklahoma City
-- Awesome content, awesome people
-- CFP open until Aug. 6!
----
 layout: false
 class: left, middle, inverse
 # Carmen Bourlon
 ## Twitter: [@carmalou](https://twitter.com/carmalou)
 ## Blog: [carmalou.com](https://carmalou.com)
 ## MargieMap: [carmalou.com/margie](https://carmalou.com/margie/)
-## Slides: [carmalou.com/at-your-service-serviceworkers](https://carmalou.com/at-your-service-serviceworkers/)
 ## Repo: [github.com/carmalou/at-your-service-serviceworkers](https://github.com/carmalou/at-your-service-serviceworkers)
 
 </textarea>
