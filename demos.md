@@ -10,5 +10,5 @@
 
 # Background Sync
 
-- http://carmalou.com/indexeddb/
+- https://carmalou.com/indexeddb/
 - https://github.com/carmalou/indexeddb
